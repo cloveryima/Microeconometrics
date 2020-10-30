@@ -1,0 +1,41 @@
+# Question 1 Part e
+z = 0 
+x <- integer(10000)
+y <- integer(10000)
+for (i in 1:10000){
+  z <- sample(1:10, 1, replace=TRUE)
+  if (z == 1){
+    x[i] <- 0
+    y[i] <- 0
+  }
+  if (z == 2 | z == 3){
+    x[i] <- 1
+    y[i] <- 0
+  }
+  if (z == 4 | z == 5){
+    x[i] <- 2
+    y[i] <- 0
+  }
+  if (z == 6 | z == 7){
+    x[i] <- 0
+    y[i] <- 1
+  }
+  if (z == 8 | z == 9){
+    x[i] <- 1
+    y[i] <- 1
+  }
+  if (z == 10){
+    x[i] <- 2
+    y[i] <- 1
+  }
+}
+
+#Sample Distribution
+table(x,y)/10000
+
+#Result
+   y
+x        0      1
+  0 0.1076 0.2025
+  1 0.1949 0.1953
+  2 0.1968 0.1029

@@ -1,0 +1,103 @@
+# Question 2. Use the data set grogger.rda to answer the following
+
+library(foreign)
+
+install.packages("lmtest")
+library(lmtest)
+install.packages("sandwich")
+library(sandwich)
+
+
+# Import the data
+load("grogger.rda") #We use load instead of read because it's rda
+
+# Part a
+
+# Create a dummy arr86
+grogger$arr86 <- as.numeric(grogger$narr86 %in% c(1:12))
+# Linear Probability Model Estimation
+lpm <- lm(arr86 ~ pcnv + avgsen + tottime + ptime86 + inc86 + black + hispan + born60, data = grogger)
+
+# Report the result
+coeftest(lpm, vcov = vcovHC(lpm, type = "const"))
+coeftest(lpm, vcov = vcovHC(lpm, type = "HC"))
+# vcovHC: A function for extracting the covariance matrix from x is supplied
+# const: usual standard errors
+# HC: heteroskedasticity-corrected errors
+
+# Save the result as text file
+sink("lpm_usual.txt")
+print(coeftest(lpm, vcov = vcovHC(lpm, type = "const")))
+sink()
+
+sink("lpm_robust.txt")
+print(coeftest(lpm, vcoc = vcocHC(lpm, type = "HC")))
+sink()
+
+# Part b
+#Test the joint significance of avgsen and tottime
+
+install.packages("aod")
+library(aod)
+require(stats)
+
+# Select the two variables avgsen and tottime
+null <- c(0,0)
+testcoef <- as.matrix(rbind(c(0,0,1,0,0,0,0,0,0),c(0,0,0,1,0,0,0,0,0)))
+
+# Wald test and the result as a text file
+sink("waldtest_non.txt")
+print(wald.test(b = coef(lpm), Sigma = vcovHC(lpm, type = "const"), L = testcoef, H0 = null))
+sink() #nonrobust
+
+sink("waldtest_rbst.txt")
+print(wald.test(b = coef(lpm), Sigma = vcovHC(lpm, type = "HC"), L = testcoef, H0 = null))
+sink() #robust
+
+# Part c
+require(aod)
+
+install.packages("mfx")
+library(mfx)
+
+# Pobit model and output the result
+myprobit <- glm(arr86 ~ pcnv + avgsen + tottime + ptime86 + inc86 + black + hispan + born60, data = grogger)
+
+sink("myprobit.txt")
+print(coeftest(myprobit))
+sink()
+
+# Marginal effect not sure how to do it
+
+# Part d
+# Generate fitted values
+predicted <- fitted(myprobit)
+predictedarr <- as.numeric(predicted >= .5)
+
+# Tabulate the fitted values against the actual data and output the result
+sink("predicted.txt")
+print(table(predictedarr, grogger$arr86))
+sink()
+
+# Part e
+# New probit model
+myprobit2 <- glm(arr86 ~ pcnv + avgsen + tottime + ptime86 + inc86 + black + hispan + born60 + pcnvsq + pt86sq + inc86sq, data = grogger)
+
+# Test for individual significance and output the result
+sink("mypobit2.txt")
+print(coeftest(myprobit2))
+sink()
+
+# Test for joint significance
+
+# Select the three quadratic variables
+null2 <- c(0,0,0)
+testcoef2 <- as.matrix(rbind(c(0,0,0,0,0,0,0,0,0,1,0,0),
+                             c(0,0,0,0,0,0,0,0,0,0,1,0),
+                             c(0,0,0,0,0,0,0,0,0,0,0,1)))
+# Wald test and output the result
+sink("waldtest2.txt")
+wald.test(b = coef(myprobit2), Sigma = vcovHC(myprobit2, type = "const"), L = testcoef2, H0 = null2)
+sink()
+
+

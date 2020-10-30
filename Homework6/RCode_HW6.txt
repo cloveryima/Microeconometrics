@@ -1,0 +1,53 @@
+library(foreign)
+install.packages("VGAM")
+suppressMessages(library(VGAM))
+suppressMessages(library(lmtest))
+install.packages("aod")
+library(aod)
+require(stats)
+keane <- read.dta("keane.dta")
+
+#part(a)
+
+#substract data for year == 81 & keep only vars of interest
+keane81 = subset(keane, keane$year == 81)
+keane81 = subset(keane,!(is.na(keane$status)),
+            select = c("id", "status", "educ", "exper", "expersq", "black"))
+
+#substaract data for year == 87 & keep only vars of interest
+keane87 = subset(keane, keane$year == 87)
+keane87 = subset(keane,!(is.na(keane$status)),
+                 select = c("id", "status", "educ", "exper", "expersq", "black"))
+
+#multinomial logit estimation for year == 81
+mnl81.canned <- vglm(status ~ educ + exper + expersq + black, lr.confint=TRUE, multinomial(refLevel = 1), data = keane81)
+confint(mnl81.canned)
+coeftest(mnl81.canned)
+#multinomial logit estimation for year == 87
+mnl87.canned <- vglm(status ~ educ + exper + expersq + black, multinomial(refLevel = 1), lr.confint=TRUE, data=keane87)
+confint(mnl87.canned)
+coeftest(mnl87.canned)
+
+
+#part(b)
+mnl.canned <- vglm(status ~ educ + exper + expersq + black + y82 + y83 + y84 + y85 + y86 + y87, multinomial(refLevel=1), lr.confint = TRUE,data=keane)
+coeftest(mnl.canned)
+
+#Part(c) is in the pdf file
+
+#Part(d) is in the pdf file
+
+#Part(e)
+# for year == 81
+predict(mnl.canned,newdata=data.frame(const=1,educ=12,exper=5,expersq=25,black=1,y82=0,y83=0,y84=0,y85=0,y86=0,y87=0),type="response")
+predict(mnl.canned,newdata=data.frame(const=1,educ=16,exper=5,expersq=25,black=1,y82=0,y83=0,y84=0,y85=0,y86=0,y87=0),type="response")
+# for year == 87
+predict(mnl.canned,newdata=data.frame(const=1,educ=12,exper=5,expersq=25,black=1,y82=0,y83=0,y84=0,y85=0,y86=0,y87=1),type="response")
+predict(mnl.canned,newdata=data.frame(const=1,educ=16,exper=5,expersq=25,black=1,y82=0,y83=0,y84=0,y85=0,y86=0,y87=1),type="response")
+
+#Part(f) is in the pdf file
+
+#Part(g)
+mnlg.canned <- vglm(status ~ educ + exper + expersq + black + y82 + y83 + y84 + y85 + y86 + y87 + I(exper*y81) + I(expersq*y81) + I(exper*y87) + I(expersq*y87), multinomial(refLevel=1), lr.confint = TRUE,data=keane)
+coeftest(mnlg.canned)
+

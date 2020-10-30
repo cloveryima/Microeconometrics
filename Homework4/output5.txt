@@ -1,0 +1,19 @@
+Call:
+probitmfx(formula = myprobit, data = grogger)
+
+Marginal Effects:
+              dF/dx   Std. Err.       z     P>|z|    
+pcnv    -0.17815763  0.02286145 -7.7929 6.547e-15 ***
+avgsen   0.00410478  0.00673734  0.6093    0.5424    
+tottime -0.00246442  0.00533818 -0.4617    0.6443    
+ptime86 -0.02616327  0.00550936 -4.7489 2.046e-06 ***
+inc86   -0.00149332  0.00015358 -9.7237 < 2.2e-16 ***
+black    0.16352462  0.02674495  6.1142 9.703e-10 ***
+hispan   0.09840481  0.02298579  4.2811 1.860e-05 ***
+born60   0.00361454  0.01798083  0.2010    0.8407    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+dF/dx is for discrete change for the following variables:
+
+[1] "black"  "hispan" "born60"

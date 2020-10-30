@@ -1,0 +1,55 @@
+# Quesiton 1. Poisson distribution
+# Part a, b, and c are in the pdf file
+# Load the data
+mydata <- read.csv("hw4.1.csv", header = TRUE)
+y <- mydata$y #make it a vector
+
+# Part d 
+uniquey <- unique(y)
+uniquey <- sort(uniquey) #obtain all the values that y can take on
+uniquey # there are 12 unique values (from 0 to 11)
+prob <- integer(12) #generate a numeric vector of size 12
+for (i in 1:12){
+  prob[i] <- length(y[ which(y == uniquey[i])])/1000
+}
+prob # a vector of probability each value takes on
+
+# Part e
+# (-1) * Empirical expectation of log-likelihood
+myfun1 <- function(theta){
+  result1 <- 0
+  for (i in 1:12){
+    result1 <- result1 - prob[i]*(uniquevalues[i]*log(theta) - theta - log(factorial(uniquevalues[i])))
+  }
+  return(result1)
+}
+
+# Empirical log-likelihood for the first observation (y = 5)
+myfun2 <- function(theta){
+  result2 <- prob[6]*(5*log(theta)-theta-log(factorial(5)))
+  return(result2)
+}
+
+# Empirical log-likelihood for the second observation (y = 2)
+myfun3 <- function(theta){
+  result3 <- prob[3]*(2*log(theta)-theta-log(factorial(2)))
+  return(result3)
+}
+
+# Plotting
+ellf <- integer(10000) #expected likelihood function
+elff <- integer(10000) #likelihood of the first observation
+elfs <- integer(10000) # likelihood of the second observation
+index <- integer(10000)
+
+for (i in 1:10000){
+  ellf[i] <- (-1)*myfun1(i/1000) #because it would minimize if we don't use negative one
+  elff[i] <- myfun2(i/1000)
+  elfs[i] <- myfun3(i/1000)
+  index[i] <- i/1000
+}
+
+par(mfrow=c(1,3))
+plot(index, ellf, main = "Empirical log-likelihood function", xlab = "theta", ylab  ="")
+plot(index, elff, main = "Log-likelihood function for the first observation (5)", xlab = "theta", ylab ="", col = "blue")
+plot(index, elfs, main = "Log-likelihood function for the second observation (2)", xlab = "theta", ylab ="", col = "red")

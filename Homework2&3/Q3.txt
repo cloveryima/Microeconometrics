@@ -1,0 +1,77 @@
+#Set working directory
+setwd("C:/Users/think/Documents/R/Homework2&3")
+#Import the dataset "cornwell. I have converted .dta to .csv in Stata
+cornwell <- read.csv("cornwell.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+#1. Estimate a model relating the crime rate to the deterrent variables
+model <- lm(lcrmrte ~ lprbarr + lprbconv + lprbpris + lavgsen, data = cornwell, year == 87)
+summary(model)
+
+#Regression result
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -4.86792    0.43153 -11.281  < 2e-16 ***
+  lprbarr     -0.72397    0.11532  -6.278 1.39e-08 ***
+  lprbconv    -0.47251    0.08311  -5.686 1.80e-07 ***
+  lprbpris     0.15967    0.20644   0.773    0.441    
+lavgsen      0.07642    0.16347   0.467    0.641    
+---
+  Signif. codes:  0 ¡®***¡¯ 0.001 ¡®**¡¯ 0.01 ¡®*¡¯ 0.05 ¡®.¡¯ 0.1 ¡® ¡¯ 1
+
+Residual standard error: 0.429 on 85 degrees of freedom
+Multiple R-squared:  0.4162,	Adjusted R-squared:  0.3888 
+F-statistic: 15.15 on 4 and 85 DF,  p-value: 2.171e-09
+
+#2. Add logecrmrteT for 1986 as an additional explanatory variable
+#Subsetting 86 data
+cornwell86 <- cornwell[ which(cornwell$year=='86'), ]
+#Subsetting 87 data
+cornwell87 <- cornwell[ which(cornwell$year=='87'), ]
+#Regression with 86 crmrte
+model1 <- lm(cornwell87$lcrmrte ~ cornwell87$lprbarr + cornwell87$lprbconv + cornwell87$lprbpris + 
+     cornwell87$lavgsen + cornwell86$lcrmrte)
+model1
+summary(model1)
+
+#Regression result
+Call:
+  lm(formula = cornwell87$lcrmrte ~ cornwell87$lprbarr + cornwell87$lprbconv + 
+       cornwell87$lprbpris + cornwell87$lavgsen + cornwell86$lcrmrte)
+
+Coefficients:
+  (Intercept)   cornwell87$lprbarr  cornwell87$lprbconv  cornwell87$lprbpris   cornwell87$lavgsen  
+-0.76663             -0.18504             -0.03868             -0.12669             -0.15202  
+cornwell86$lcrmrte  
+0.77981  
+
+#Comment: 
+#There are some notable changes in the coefficients on the original variables. The elasticities
+#with respect to prbarr and prbconv are much smaller now, but still have signs predicted by a 
+#deterrent-effect story. The conviction probability is no longer statistically significant. 
+#Adding the lagged crime rate changes the signs of the elasticities with respect to prbpris 
+#and avgsen, and the latter is almost statistically significant at the 5% level against a 27
+#two-sided alternative (p-value ? .056). Not surprisingly, the elasticity with respect to the
+#lagged crime rate is large and very statistically significant. 
+
+#3. Compute the F statistic for joint signifiance of all the wage variables
+
+model2 <- lm(cornwell87$lcrmrte ~ cornwell87$lprbarr + cornwell87$lprbconv + cornwell87$lprbpris + 
+               cornwell87$lavgsen + cornwell86$lcrmrte + cornwell87$lwmfg + cornwell87$lwcon +
+               cornwell87$lwfed + cornwell87$lwfir + cornwell87$lwloc + cornwell87$lwser + cornwell87$lwsta
+             + cornwell87$lwtrd + cornwell87$lwtuc)
+summary(model2)
+anova(model1, model2)
+
+#4. Make the test robust to heteroskedasticity
+library(MASS)
+model1R <- rlm(cornwell87$lcrmrte ~ cornwell87$lprbarr + cornwell87$lprbconv + cornwell87$lprbpris + 
+                cornwell87$lavgsen + cornwell86$lcrmrte)
+model2R <- rlm(cornwell87$lcrmrte ~ cornwell87$lprbarr + cornwell87$lprbconv + cornwell87$lprbpris + 
+                cornwell87$lavgsen + cornwell86$lcrmrte + cornwell87$lwmfg + cornwell87$lwcon +
+                cornwell87$lwfed + cornwell87$lwfir + cornwell87$lwloc + cornwell87$lwser + cornwell87$lwsta
+              + cornwell87$lwtrd + cornwell87$lwtuc)
+anova(model1R, model2R)
+anova(model1, model2)
+
+
+

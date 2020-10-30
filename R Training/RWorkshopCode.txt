@@ -1,0 +1,88 @@
+## Comments in R are marked with # signs.
+
+### This is the script file for the R workshop developed by Topher Lawton, fall 2018.
+
+##### SECTION 1: INTRODUCTION #####
+
+###Live "tour" of R--using mtcars###
+#Goal: demonstrate R syntax with built-in mtcars dataset.
+
+#R comes with a number of built-in datasets, including mtcars.
+mtcars
+
+str(mtcars)
+summary(mtcars)
+head(mtcars)
+
+plot(mtcars$mpg, mtcars$cyl)
+
+plot(mtcars$cyl, mtcars$mpg)
+
+plot(mtcars$cyl, mtcars$mpg, main= "MPG by number of cylinders", xlab="Cylinders", ylab="Miles per Gallon")
+
+
+##### SECTION 2: DETAILED PRACTICE #####
+#In this section, you'll do the following:
+# 1: Load in a CSV data file
+# 2: Trim down to data we want
+# 3: Explore the data
+# 4: Run a visualization
+
+##LOAD CSV##
+
+#confirm working directory #http://rfunction.com/archives/1001
+getwd()
+#setwd()
+
+#get the CSV into R:
+mydata <- read.csv("StateData.csv", header = TRUE, sep = ",", stringsAsFactors=FALSE)
+
+#Look at your variable
+mydata
+
+
+#NOTE: ctrl+L will clear out your R window, if it's too much visual distraction.
+
+##TRIM DATA##
+mypopdata <- mydata[,c(1,3:8)]
+
+#look at your new variable:
+mypopdata
+
+
+##EXPLORE DATA##
+
+#These functions each tell you different things about your data
+str(mypopdata) #STRucture
+head(mypopdata) #The first few rows
+summary(mypopdata) #Basic summary statistics
+
+
+##VISUALIZE THE DATA##
+
+alaskapop <- mypopdata[2,]
+
+str(alaskapop)
+
+barplot(alaskapop)
+
+barplot(as.matrix(alaskapop[,2:6]))
+
+##### SECTION 3: UNSTRUCTURED PRACTICE #####
+
+#In this time, explore R, and ask whatever questions you might have!
+
+#Basic: repeat the "structured" section for a different state. Can you improve the visualization?
+
+#Intermediate: Create a visualization of the income trends in one state.
+
+#Advanced: Analyse the data and create a visualization that answers a question, such as:
+#Which states have the highest median income? Are they static, or do they change positions?
+#Which states have the highest and lowest elevation in the US? What about the lowest "highest point" or highest "lowest point"?
+
+
+##### SECTION 4: WRAP-UP #####
+
+#Thanks for attending this workshop! Please provide feedback--this is a new workshop for us, and it really helps us improve!
+
+#The library is always happy to collaborate with you on your projects. Contact digitalscholarship@georgetown.edu for details.

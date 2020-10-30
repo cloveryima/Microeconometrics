@@ -1,0 +1,5 @@
+Wald test:
+----------
+
+Chi-squared test:
+X2 = 71.9, df = 3, P(> X2) = 1.7e-15
